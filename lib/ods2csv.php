@@ -166,7 +166,9 @@ class Ods2Csv
             array_splice($this->rows[$this->nrows], $i + 1);
             $this->inrow = false;
         }
-        
+         if ($name == "TEXT:S") {
+	   $this->celldata.= ' ';
+	 }
         if ($name == "TABLE:TABLE-CELL") {
             $this->incell = false;
             
