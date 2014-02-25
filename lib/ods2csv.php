@@ -17,6 +17,7 @@ class Ods2Csv
     private $colrepeat = false;
     private $inrow = false;
     private $incell = false;
+    private $cellattrs = array();
     /**
      * Take an ODS file and produce one CSV
      *
@@ -136,6 +137,7 @@ class Ods2Csv
         if ($name == "TABLE:TABLE-CELL") {
             $this->incell = true;
             $this->celldata = "";
+            $this->cellattrs = $attrs;
             if (!empty($attrs["TABLE:NUMBER-COLUMNS-REPEATED"])) {
                 $this->colrepeat = intval($attrs["TABLE:NUMBER-COLUMNS-REPEATED"]);
             }
@@ -171,7 +173,11 @@ class Ods2Csv
 	 }
         if ($name == "TABLE:TABLE-CELL") {
             $this->incell = false;
-            
+
+            if ($this->celldata === '') {
+                $this->celldata = $this->getOfficeTypedValue($this->cellattrs);
+            }
+
             $this->rows[$this->nrows][$this->ncol] = $this->celldata;
             
             if ($this->colrepeat > 1) {
@@ -205,5 +211,21 @@ class Ods2Csv
         if ($sys == "application/vnd.oasis.opendocument.spreadsheet") return true;
         return false;
     }
-}
 
+    private function getOfficeTypedValue($attrs) {
+        $value = '';
+        /* Get value from property OFFICE:<type>-VALUE */
+        if (isset($attrs['OFFICE:VALUE-TYPE'])) {
+            $type = strtoupper($attrs['OFFICE:VALUE-TYPE']);
+            $propName = 'OFFICE:' . $type . '-VALUE';
+            if (isset($attrs[$propName])) {
+                $value = (string)$attrs[$propName];
+            }
+        }
+        /* Get value from property OFFICE:VALUE */
+        if ($value == '' && isset($attrs['OFFICE:VALUE'])) {
+            $value = (string)$attrs['OFFICE:VALUE'];
+        }
+        return $value;
+    }
+}
