@@ -14,6 +14,8 @@ $nrow = 0;
 $ncol = 0;
 $rows = array();
 $colrepeat = 0;
+$celldata = '';
+$cellattrs = array();
 $dbg = false;
 $podir = $argv[1];
 
@@ -321,7 +323,7 @@ function extractPOFromCSV($fi, $podir)
     /** @noinspection PhpUnusedParameterInspection */
     $parser, $name, $attrs)
     {
-        global $rows, $nrow, $inrow, $incell, $ncol, $colrepeat, $celldata;
+        global $rows, $nrow, $inrow, $incell, $ncol, $colrepeat, $celldata, $cellattrs;
         if ($name == "TABLE:TABLE-ROW") {
             $inrow = true;
             if (isset($rows[$nrow])) {
@@ -343,6 +345,7 @@ function extractPOFromCSV($fi, $podir)
         if ($name == "TABLE:TABLE-CELL") {
             $incell = true;
             $celldata = "";
+            $cellattrs = $attrs;
             if (!empty($attrs["TABLE:NUMBER-COLUMNS-REPEATED"])) {
                 $colrepeat = intval($attrs["TABLE:NUMBER-COLUMNS-REPEATED"]);
             }
@@ -360,7 +363,7 @@ function extractPOFromCSV($fi, $podir)
     /** @noinspection PhpUnusedParameterInspection */
     $parser, $name)
     {
-        global $rows, $nrow, $inrow, $incell, $ncol, $colrepeat, $celldata;
+        global $rows, $nrow, $inrow, $incell, $ncol, $colrepeat, $celldata, $cellattrs;
         if ($name == "TABLE:TABLE-ROW") {
             // Remove trailing empty cells
             $i = $ncol - 1;
@@ -376,7 +379,11 @@ function extractPOFromCSV($fi, $podir)
         
         if ($name == "TABLE:TABLE-CELL") {
             $incell = false;
-            
+
+            if ($celldata === '') {
+                $celldata = getOfficeTypedValue($cellattrs);
+            }
+
             $rows[$nrow][$ncol] = $celldata;
             
             if ($colrepeat > 1) {
@@ -400,4 +407,21 @@ function extractPOFromCSV($fi, $podir)
             $celldata.= preg_replace('/^\s*[\r\n]\s*$/ms', '', str_replace(SEPCHAR, ALTSEPCHAR, $data));
         }
     }
-    
+
+    function getOfficeTypedValue($attrs)
+    {
+        $value = '';
+        /* Get value from property OFFICE:<type>-VALUE */
+        if (isset($attrs['OFFICE:VALUE-TYPE'])) {
+            $type = strtoupper($attrs['OFFICE:VALUE-TYPE']);
+            $propName = 'OFFICE:' . $type . '-VALUE';
+            if (isset($attrs[$propName])) {
+                $value = (string)$attrs[$propName];
+            }
+        }
+        /* Get value from property OFFICE:VALUE */
+        if ($value == '' && isset($attrs['OFFICE:VALUE'])) {
+            $value = (string)$attrs['OFFICE:VALUE'];
+        }
+        return $value;
+    }
