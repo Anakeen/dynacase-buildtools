@@ -5,7 +5,7 @@
 */
 
 require_once "xgettextCommon.php";
-class xgettextLayout extends xgettextCommon
+class xgettextMustache extends xgettextCommon
 {
     
     public function extract()
@@ -31,10 +31,10 @@ class xgettextLayout extends xgettextCommon
                 $tmpDir = '';
             }
             
-            $cmd = sprintf('perl -ne \'print "\$a=gettext(\\"$1\\");\n" while(m/\[TEXT:([^]]+)]/g)\' %s >> %s', $layoutFile, $phpFile);
+            $cmd = sprintf('perl -ne \'print "\$a=gettext(\\"$1\\");\n" while(m/\[\[#i18n\]\](.+)\[\[\/i18n/g)\' %s >> %s', $layoutFile, $phpFile);
             self::mySystem($cmd);
-            $cmd = sprintf('perl -ne \'print "\$a=pgettext(\\"$2\\", \\"$1\\");\n" while(m/\[TEXT\((.+)\):([^]]+)]/g)\' %s >> %s', $layoutFile, $phpFile);
-            self::mySystem($cmd);
+            //$cmd = sprintf('perl -ne \'print "\$a=pgettext(\\"$2\\", \\"$1\\");\n" while(m/\[\[#i18n\]\]\((.+)\):([]+)]/g)\' %s >> %s', $layoutFile, $phpFile);
+            //self::mySystem($cmd);
             
             if ($tmpDir) {
                 $cmd = sprintf('\rm -r "%s"', $tmpDir);
@@ -50,7 +50,6 @@ class xgettextLayout extends xgettextCommon
             --no-location \
             --keyword=pgettext:1,2c %s -o %s %s \
             && rm %s', $this->getXoptions() , $potFile, $phpFile, $phpFile);
-        
         self::mySystem($cmd);
     }
 }
