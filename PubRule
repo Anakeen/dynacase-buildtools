@@ -168,6 +168,9 @@ po:
 	@echo Extracting from layout
 	@find $(LAYOUTPOFIND) \( -name "*.xml" -o -name "*.js" -o -name "*.html" \) | $(utildir)/xgettextLayout -o $(appname)_layout.pot -f-
 
+	@echo Extracting from mustache
+	@find $(LAYOUTPOFIND) \( -name "*.mustache" -o -name "*.html" \) | $(utildir)/xgettextMustache -o $(appname)_mustache.pot -f-
+
 	@echo Extracting from PHP
 	@find $(PHPPOFIND) -type f \( -name "*.app" -o -name "*.php" \) | $(utildir)/xgettextPhp -o $(appname)_app_.pot -f-
 
@@ -195,7 +198,7 @@ po:
 		if [ ! -e $(podir)/$${lang}/$(appname)_$$lang.po ]; then \
 			LC_ALL=fr_FR.UTF-8 msginit --no-translator -i $(appname)_app_.pot -o $(podir)/$${lang}/$(appname)_$$lang.po; \
 		fi; \
-		msgcat  $(appname)_layout.pot $(appname)_app_.pot  > $(appname)_tmp_$$lang.pot; \
+		msgcat  $(appname)_layout.pot $(appname)_app_.pot $(appname)_mustache.pot  > $(appname)_tmp_$$lang.pot; \
 		msgmerge -q -s -v --force-po -N $(podir)/$${lang}/$(appname)_$$lang.po $(appname)_tmp_$$lang.pot  > $(podir)/$${lang}/$(appname)_$$lang.po.new; \
 		mv $(podir)/$${lang}/$(appname)_$$lang.po.new $(podir)/$${lang}/$(appname)_$$lang.po; \
 		rm -f $(appname)_tmp_$$lang.pot; \

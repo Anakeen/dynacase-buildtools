@@ -72,6 +72,7 @@ class xgettextPhp extends xgettextCommon
         
         file_put_contents($phpFile, $searchPhp);
         $cmd = sprintf('xgettext \
+              --force-po \
               --language=PHP \
               --sort-output \
               --from-code=utf-8 \
