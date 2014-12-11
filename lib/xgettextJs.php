@@ -12,6 +12,7 @@ class xgettextJs extends xgettextCommon
         $potFile = $this->outputFile;
         
         $cmd = sprintf('xgettext \
+              --force-po \
               --language=c \
               --sort-output \
               --from-code=utf-8 \
