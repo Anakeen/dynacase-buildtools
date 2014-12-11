@@ -43,6 +43,7 @@ class xgettextLayout extends xgettextCommon
         }
         
         $cmd = sprintf('xgettext \
+            --force-po \
             --language=PHP \
             --sort-output \
             --from-code=utf-8 \
