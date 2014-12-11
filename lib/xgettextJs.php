@@ -11,6 +11,7 @@ class xgettextJs extends xgettextCommon
     {
         $potFile = $this->outputFile;
         
+        $inputFilesArgs = array_map("escapeshellarg", $this->inputFiles);
         $cmd = sprintf('xgettext \
               --force-po \
               --language=c \
@@ -19,7 +20,7 @@ class xgettextJs extends xgettextCommon
               --no-location \
               --add-comments=_COMMENT \
               --keyword=_:1 \
-             %s -o %s %s ', $this->getXoptions() , $potFile, '"' . implode('" "', $this->inputFiles) . '"');
+             %s -o %s %s ', $this->getXoptions() , escapeshellarg($potFile) , join(' ', $inputFilesArgs));
         
         self::mySystem($cmd);
     }
