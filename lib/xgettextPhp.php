@@ -71,6 +71,7 @@ class xgettextPhp extends xgettextCommon
         }
         
         file_put_contents($phpFile, $searchPhp);
+        $inputFilesArgs = array_map("escapeshellarg", $this->inputFiles);
         $cmd = sprintf('xgettext \
               --force-po \
               --language=PHP \
@@ -87,8 +88,7 @@ class xgettextPhp extends xgettextCommon
               --keyword="N_"  \
               --keyword="text"  \
               --keyword="Text" \
-             %s -o %s %s "%s" \
-            && rm  "%s"', $this->getXoptions() , $potFile, '"' . implode('" "', $this->inputFiles) . '"', $phpFile, $phpFile);
+             %s -o %s %s %s && rm  %s', $this->getXoptions() , escapeshellarg($potFile) , join(' ', $inputFilesArgs) , escapeshellarg($phpFile) , escapeshellarg($phpFile));
         
         self::mySystem($cmd);
     }

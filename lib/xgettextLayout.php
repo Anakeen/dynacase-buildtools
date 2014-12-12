@@ -24,20 +24,20 @@ class xgettextLayout extends xgettextCommon
             }
             if ($ext == 'odt') {
                 $tmpDir = $temp_file = sprintf("%s/%s", sys_get_temp_dir() , uniqid('po'));
-                $cmd = sprintf('mkdir %s && unzip -d "%s" "%s" content.xml meta.xml && cat %s/meta.xml >> %s/content.xml', $tmpDir, $tmpDir, $layoutFile, $tmpDir, $tmpDir);
+                $cmd = sprintf('mkdir %s && unzip -d %s %s content.xml meta.xml && cat %s/meta.xml >> %s/content.xml', escapeshellarg($tmpDir) , escapeshellarg($tmpDir) , escapeshellarg($layoutFile) , escapeshellarg($tmpDir) , escapeshellarg($tmpDir));
                 self::mySystem($cmd);
                 $layoutFile = sprintf("%s/content.xml", $tmpDir);
             } else {
                 $tmpDir = '';
             }
             
-            $cmd = sprintf('perl -ne \'print "\$a=gettext(\\"$1\\");\n" while(m/\[TEXT:([^]]+)]/g)\' %s >> %s', $layoutFile, $phpFile);
+            $cmd = sprintf('perl -ne \'print "\$a=gettext(\\"$1\\");\n" while(m/\[TEXT:([^]]+)]/g)\' %s >> %s', escapeshellarg($layoutFile) , escapeshellarg($phpFile));
             self::mySystem($cmd);
-            $cmd = sprintf('perl -ne \'print "\$a=pgettext(\\"$2\\", \\"$1\\");\n" while(m/\[TEXT\((.+)\):([^]]+)]/g)\' %s >> %s', $layoutFile, $phpFile);
+            $cmd = sprintf('perl -ne \'print "\$a=pgettext(\\"$2\\", \\"$1\\");\n" while(m/\[TEXT\((.+)\):([^]]+)]/g)\' %s >> %s', escapeshellarg($layoutFile) , escapeshellarg($phpFile));
             self::mySystem($cmd);
             
             if ($tmpDir) {
-                $cmd = sprintf('\rm -r "%s"', $tmpDir);
+                $cmd = sprintf('\rm -r %s', escapeshellarg($tmpDir));
                 self::mySystem($cmd);
             }
         }
@@ -48,8 +48,8 @@ class xgettextLayout extends xgettextCommon
             --sort-output \
             --from-code=utf-8 \
             --no-location \
-            --keyword=pgettext:1,2c %s -o %s %s \
-            && rm %s', $this->getXoptions() , $potFile, $phpFile, $phpFile);
+            --keyword=pgettext:1,2c \
+            %s -o %s %s && rm %s', $this->getXoptions() , escapeshellarg($potFile) , escapeshellarg($phpFile) , escapeshellarg($phpFile));
         
         self::mySystem($cmd);
     }
