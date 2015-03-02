@@ -33,7 +33,7 @@ class xgettextLayout extends xgettextCommon
             
             $cmd = sprintf('perl -ne \'print "\$a=gettext(\\"$1\\");\n" while(m/\[TEXT:([^]]+)]/g)\' %s >> %s', escapeshellarg($layoutFile) , escapeshellarg($phpFile));
             self::mySystem($cmd);
-            $cmd = sprintf('perl -ne \'print "\$a=pgettext(\\"$2\\", \\"$1\\");\n" while(m/\[TEXT\((.+)\):([^]]+)]/g)\' %s >> %s', escapeshellarg($layoutFile) , escapeshellarg($phpFile));
+            $cmd = sprintf('perl -ne \'print "\$a=pgettext(\\"$2\\", \\"$1\\");\n" while(m/\[TEXT\(([^\)]+)\):([^]]+)]/g)\' %s >> %s', escapeshellarg($layoutFile) , escapeshellarg($phpFile));
             self::mySystem($cmd);
             
             if ($tmpDir) {
