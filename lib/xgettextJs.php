@@ -19,6 +19,7 @@ class xgettextJs extends xgettextCommon
               --no-location \
               --add-comments=_COMMENT \
               --keyword=_:1 \
+              --keyword=___:1,2c \
              %s -o %s %s ', $this->getXoptions() , $potFile, '"' . implode('" "', $this->inputFiles) . '"');
         
         self::mySystem($cmd);

@@ -66,9 +66,10 @@ Class Po2js
             $pocontent = file_get_contents($this->pofile);
             if ($pocontent !== false) {
                 $pocontent .= "\n\n";
-                preg_match_all('/^msgid (?P<msgid>".*?)msgstr (?P<msgstr>".*?")\n\n/ms', $pocontent, $matches, PREG_SET_ORDER);
-                foreach ($matches as $m) {
-                    $this->memoEntry($m['msgid'], $m['msgstr']);
+                preg_match_all('/^(msgctxt (?P<msgctxt>".*?))?msgid (?P<msgid>".*?)msgstr (?P<msgstr>".*?")\n\n/ms', 
+			       $pocontent, $matches, PREG_SET_ORDER);
+		foreach ($matches as $m) {
+		  $this->memoEntry($m['msgid'], $m['msgstr'], $m['msgctxt']);
                 }
             } else {
                 throw new Exception("PO file ({$this->pofile}) is not readable.");
@@ -83,14 +84,20 @@ Class Po2js
      * @param $key
      * @param $text
      */
-    protected function memoEntry($key, $text)
+    protected function memoEntry($key, $text, $ctxt='')
     {
         $tkey = explode("\n", $key);
-        $ttext = explode("\n", "$text");
+        $ttext = explode("\n", $text);
+        $tctxt = explode("\n", $ctxt);
         $key = trim(implode("\n", array_map('Po2js::trimquote', $tkey)));
         $text = trim(implode("\n", array_map('Po2js::trimquote', $ttext)));
+        $ctxt = trim(implode("\n", array_map('Po2js::trimquote', $tctxt)));
         if ($key && $text) {
-            $this->entries[$key] = $text;
+	  if ($ctxt) {
+             $this->entries["_msgctxt_"][$ctxt][$key] = $text;
+	  } else {
+             $this->entries[$key] = $text;
+	  }
         } else if ($key == "") {
             if (stristr($text, "charset=ISO-8859") !== false) {
                 $this->encoding = 'iso';
