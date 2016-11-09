@@ -214,36 +214,41 @@ class GenerateStub
             while (($data = fgetcsv($handle, 1000, ";")) !== FALSE) {
                 switch ($data[0]) {
                     case "BEGIN":
-                        $famName = strtolower($data[5]);
-                        if (isset($this->content[$famName])) {
+                        if (isset($data[5])) {
+                            $famName = strtolower($data[5]);
+                            if (isset($this->content[$famName])) {
 
-                            $className = $this->content[$famName]["className"];
-                            $fromName = $this->content[$famName]["fromName"];
-                            $famId = $this->content[$famName]["id"];
-                            $name = $this->content[$famName]["name"];
+                                $className
+                                    = $this->content[$famName]["className"];
+                                $fromName
+                                    = $this->content[$famName]["fromName"];
+                                $famId = $this->content[$famName]["id"];
+                                $name = $this->content[$famName]["name"];
 
-                            if (!empty($data[4]) && $data[4] != '-') {
+                                if (!empty($data[4]) && $data[4] != '-') {
+                                    $className = $data[4];
+                                }
+                                if (!empty($data[1]) && $data[1] != '-') {
+                                    $fromName = ($data[1] == '--') ? ''
+                                        : $data[1];
+                                }
+                                if (!empty($data[3]) && $data[3] != '-') {
+                                    $famId = $data[3];
+                                }
+                                if (!empty($data[2]) && $data[2] != '-') {
+                                    $famTitle = $data[2];
+                                }
+                            } else {
+
                                 $className = $data[4];
-                            }
-                            if (!empty($data[1]) && $data[1] != '-') {
                                 $fromName = ($data[1] == '--') ? '' : $data[1];
-                            }
-                            if (!empty($data[3]) && $data[3] != '-') {
                                 $famId = $data[3];
-                            }
-                            if (!empty($data[2]) && $data[2] != '-') {
                                 $famTitle = $data[2];
+                                $name = $data[5];
                             }
-                        } else {
-
-                            $className = $data[4];
-                            $fromName = ($data[1] == '--') ? '' : $data[1];
-                            $famId = $data[3];
-                            $famTitle = $data[2];
-                            $name = $data[5];
-                        }
-                        if (!isset($this->attr[$famName])) {
-                            $this->attr[$famName] = array();
+                            if (!isset($this->attr[$famName])) {
+                                $this->attr[$famName] = array();
+                            }
                         }
                         break;
                     case 'CLASS';
