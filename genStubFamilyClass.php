@@ -221,16 +221,17 @@ class GenerateStub
                             $fromName = $this->content[$famName]["fromName"];
                             $famId = $this->content[$famName]["id"];
                             $name = $this->content[$famName]["name"];
-                            if ($data[4] && $data[4] != '-') {
+
+                            if (!empty($data[4]) && $data[4] != '-') {
                                 $className = $data[4];
                             }
-                            if ($data[1] && $data[1] != '-') {
+                            if (!empty($data[1]) && $data[1] != '-') {
                                 $fromName = ($data[1] == '--') ? '' : $data[1];
                             }
-                            if ($data[3] && $data[3] != '-') {
+                            if (!empty($data[3]) && $data[3] != '-') {
                                 $famId = $data[3];
                             }
-                            if ($data[2] && $data[2] != '-') {
+                            if (!empty($data[2]) && $data[2] != '-') {
                                 $famTitle = $data[2];
                             }
                         } else {
@@ -241,7 +242,9 @@ class GenerateStub
                             $famTitle = $data[2];
                             $name = $data[5];
                         }
-                        $this->attr[$famName]=array();
+                        if (!isset($this->attr[$famName])) {
+                            $this->attr[$famName] = array();
+                        }
                         break;
                     case 'CLASS';
                         $className = $data[1];
